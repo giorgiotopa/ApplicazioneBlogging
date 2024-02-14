@@ -29,19 +29,19 @@ public class CustomResponse {
     }
 
     public static ResponseEntity<CustomResponse> success(String message, Object obj, HttpStatus httpStatus){
-        CustomResponse personaResponse = new CustomResponse(message, obj);
-        return new ResponseEntity<>(personaResponse, httpStatus);
+        CustomResponse autoreResponse = new CustomResponse(message, obj);
+        return new ResponseEntity<>(autoreResponse, httpStatus);
     }
     public static ResponseEntity<CustomResponse> success(Object obj, HttpStatus httpStatus){
-        CustomResponse personaResponse = new CustomResponse(httpStatus.toString(), obj);
-        return new ResponseEntity<>(personaResponse, httpStatus);
+        CustomResponse autoreResponse = new CustomResponse(httpStatus.toString(), obj);
+        return new ResponseEntity<>(autoreResponse, httpStatus);
     }
     public static ResponseEntity<CustomResponse> error(String message, HttpStatus httpStatus){
-        CustomResponse personaResponse = new CustomResponse(message);
-        return new ResponseEntity<>(personaResponse, httpStatus);
+        CustomResponse autoreResponse = new CustomResponse(message);
+        return new ResponseEntity<>(autoreResponse, httpStatus);
     }
     public static ResponseEntity<CustomResponse> error(HttpStatus httpStatus) {
-        CustomResponse personaResponse = new CustomResponse(httpStatus.toString());
-        return new ResponseEntity<>(personaResponse, httpStatus);
+        CustomResponse autoreResponse = new CustomResponse(httpStatus.toString());
+        return new ResponseEntity<>(autoreResponse, httpStatus);
     }
 }

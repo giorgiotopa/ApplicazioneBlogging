@@ -3,17 +3,12 @@ package com.example.ApplicazioneBlogging.service;
 import com.example.ApplicazioneBlogging.exception.NotFoundException;
 import com.example.ApplicazioneBlogging.model.Autore;
 import com.example.ApplicazioneBlogging.model.Blog;
-import com.example.ApplicazioneBlogging.model.BlogRequest;
+import com.example.ApplicazioneBlogging.model.BlogPostRequest;
 import com.example.ApplicazioneBlogging.repository.BlogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class BlogService {
@@ -31,32 +26,26 @@ public class BlogService {
         return blogRepository.findById(id).orElseThrow(() -> new NotFoundException("Blog con id=" + id + " non trovato"));
     }
 
-    public Blog saveBlog(BlogRequest blogRequest) throws NotFoundException {
+    public Blog saveBlog(BlogPostRequest blogPostRequest) throws NotFoundException {
 
-        Autore autore = autoreService.getAutoreById(blogRequest.getIdAutore());
+        Autore autore = autoreService.getAutoreById(blogPostRequest.getIdAutore());
 
-        Blog blog = new Blog();
-        blog.setTitolo(blogRequest.getTitolo());
-        blog.setCategoria(blogRequest.getCategoria());
-        blog.setContenuto(blogRequest.getContenuto());
-        blog.setCover(blogRequest.getCover());
-        blog.setTempoDiLettura(blogRequest.getTempoDiLettura());
-        blog.setAutore(autore);
+        Blog blog = new Blog(blogPostRequest.getContenuto(),blogPostRequest.getTitolo(),blogPostRequest.getCategoria(),blogPostRequest.getTempoDiLettura(),autore);
+
 
         return blogRepository.save(blog);
 
     }
 
-    public Blog updateBlog(int id, BlogRequest blogRequest) throws NotFoundException {
+    public Blog updateBlog(int id, BlogPostRequest blogPostRequest) throws NotFoundException {
         Blog blog = getBlogById(id);
 
-        Autore autore = autoreService.getAutoreById(blogRequest.getIdAutore());
+        Autore autore = autoreService.getAutoreById(blogPostRequest.getIdAutore());
 
-        blog.setTitolo(blogRequest.getTitolo());
-        blog.setCategoria(blogRequest.getCategoria());
-        blog.setContenuto(blogRequest.getContenuto());
-        blog.setCover(blogRequest.getCover());
-        blog.setTempoDiLettura(blogRequest.getTempoDiLettura());
+        blog.setTitolo(blogPostRequest.getTitolo());
+        blog.setCategoria(blogPostRequest.getCategoria());
+        blog.setContenuto(blogPostRequest.getContenuto());
+        blog.setTempoDiLettura(blogPostRequest.getTempoDiLettura());
         blog.setAutore(autore);
 
         return blogRepository.save(blog);

@@ -9,14 +9,23 @@ public class Blog {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private String categoria;
+    private String contenuto;
     private String titolo;
     private String cover;
-    private String contenuto;
+    private String categoria;
     private int tempoDiLettura;
 
     @ManyToOne
     @JoinColumn(name = "autore_id")
     private Autore autore;
 
+    public Blog(String contenuto, String titolo, String categoria, int tempoDiLettura,Autore autore) {
+        this.contenuto = contenuto;
+        this.titolo = titolo;
+        this.categoria = categoria;
+        this.tempoDiLettura = tempoDiLettura;
+        this.cover = "https://picsum.photos/200/300";
+        this.autore = autore;
+    }
+    public Blog (){}
 }

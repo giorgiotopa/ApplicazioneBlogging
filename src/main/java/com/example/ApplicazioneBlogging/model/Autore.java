@@ -22,13 +22,14 @@ public class Autore {
     private String avatar;
     @JsonIgnore
     @OneToMany(mappedBy = "autore")
-    private List<Blog> blogs;
+    private List<Blog> posts;
 
-    public Autore( String nome, String cognome, String email, LocalDate dataDiNascita, String avatar) {
+    public Autore( String nome, String cognome, String email, LocalDate dataDiNascita) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.dataDiNascita = dataDiNascita;
         this.avatar = "https://ui-avatars.com/api/?name=" + nome + cognome;
     }
+    public Autore (){}
 }
