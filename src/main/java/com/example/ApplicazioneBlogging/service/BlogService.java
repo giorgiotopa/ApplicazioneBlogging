@@ -1,6 +1,13 @@
 package com.example.ApplicazioneBlogging.service;
 
+import com.example.ApplicazioneBlogging.exception.NotFoundException;
+import com.example.ApplicazioneBlogging.model.Autore;
 import com.example.ApplicazioneBlogging.model.Blog;
+import com.example.ApplicazioneBlogging.model.BlogRequest;
+import com.example.ApplicazioneBlogging.repository.BlogRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,42 +17,55 @@ import java.util.Optional;
 
 @Service
 public class BlogService {
-    private List<Blog> blogs = new ArrayList<>();
+    @Autowired
+    private BlogRepository blogRepository;
 
+    @Autowired
+    private AutoreService autoreService;
 
-    public List<Blog> getBlogs() {
-        return blogs;
-    }
-    public Blog getBlogById(int id) throws NoSuchElementException{
-        Optional<Blog> b = blogs.stream().filter(blog -> blog.getId()==id).findAny();
-
-        if (b.isPresent()){
-            return b.get();
-        }
-        else {
-            throw new NoSuchElementException("Blog non presente");
-        }
+    public Page<Blog> getAll(Pageable pageable){
+        return blogRepository.findAll(pageable);
     }
 
-    public void saveBlog(Blog blog){
-        blogs.add(blog);
+    public Blog getBlogById(int id) throws NotFoundException {
+        return blogRepository.findById(id).orElseThrow(() -> new NotFoundException("Blog con id=" + id + " non trovato"));
     }
 
-    public Blog aggiornaBlog(int id, Blog blog) throws NoSuchElementException{
-        Blog b = getBlogById(id);
+    public Blog saveBlog(BlogRequest blogRequest) throws NotFoundException {
 
-        b.setTitolo(blog.getTitolo());
-        b.setCategoria(blog.getCategoria());
-        b.setContenuto(blog.getContenuto());
-        b.setCover(blog.getCover());
-        b.setTempoDiLettura(blog.getTempoDiLettura());
+        Autore autore = autoreService.getAutoreById(blogRequest.getIdAutore());
 
-        return b;
+        Blog blog = new Blog();
+        blog.setTitolo(blogRequest.getTitolo());
+        blog.setCategoria(blogRequest.getCategoria());
+        blog.setContenuto(blogRequest.getContenuto());
+        blog.setCover(blogRequest.getCover());
+        blog.setTempoDiLettura(blogRequest.getTempoDiLettura());
+        blog.setAutore(autore);
+
+        return blogRepository.save(blog);
 
     }
 
-    public void deleteBlog(int id) throws NoSuchElementException{
+    public Blog updateBlog(int id, BlogRequest blogRequest) throws NotFoundException {
         Blog blog = getBlogById(id);
-        blogs.remove(blog);
+
+        Autore autore = autoreService.getAutoreById(blogRequest.getIdAutore());
+
+        blog.setTitolo(blogRequest.getTitolo());
+        blog.setCategoria(blogRequest.getCategoria());
+        blog.setContenuto(blogRequest.getContenuto());
+        blog.setCover(blogRequest.getCover());
+        blog.setTempoDiLettura(blogRequest.getTempoDiLettura());
+        blog.setAutore(autore);
+
+        return blogRepository.save(blog);
+
+    }
+
+    public void deleteBlog(int id) throws NotFoundException {
+        Blog blog = getBlogById(id);
+
+        blogRepository.delete(blog);
     }
 }

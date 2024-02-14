@@ -1,8 +1,12 @@
 package com.example.ApplicazioneBlogging.controller;
 
+import com.example.ApplicazioneBlogging.exception.NotFoundException;
 import com.example.ApplicazioneBlogging.model.Blog;
+import com.example.ApplicazioneBlogging.model.BlogRequest;
+import com.example.ApplicazioneBlogging.model.CustomResponse;
 import com.example.ApplicazioneBlogging.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,41 +15,66 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-//@RequestMapping("/api")
 public class BlogController {
+
     @Autowired
     private BlogService blogService;
-
     @GetMapping("/blog")
-    public List<Blog> getAll(){
-        return blogService.getBlogs();
-    }
-    @GetMapping("/blog/id")
-    public Blog getBlogByIdQueryParams(@RequestParam int id){
-        return blogService.getBlogById(id);
+    public ResponseEntity<CustomResponse> getAll(Pageable pageable){
+        try {
+            return CustomResponse.success(HttpStatus.OK.toString(), blogService.getAll(pageable), HttpStatus.OK);
+        }
+        catch (Exception e){
+            return CustomResponse.error(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
     @GetMapping("/blog/{id}")
-    public ResponseEntity<Blog> getBlogByIdPathVariable(@PathVariable int id){
+    public ResponseEntity<CustomResponse> getAutoById(@PathVariable int id){
         try {
-            Blog b = blogService.getBlogById(id);
-            return new ResponseEntity<Blog>(b, HttpStatus.OK);
+            return CustomResponse.success(HttpStatus.OK.toString(), blogService.getBlogById(id), HttpStatus.OK);
         }
-        catch (NoSuchElementException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        catch (NotFoundException e){
+            return CustomResponse.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-
+        catch (Exception e){
+            return CustomResponse.error(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @PostMapping("/blog")
-    public void saveBlog(@RequestBody Blog blog){
-        blogService.saveBlog(blog);
+    public ResponseEntity<CustomResponse> saveBlog(@RequestBody BlogRequest blogRequest){
+        try{
+            return CustomResponse.success(HttpStatus.OK.toString(), blogService.saveBlog(blogRequest), HttpStatus.OK);
+        }
+        catch (Exception e){
+            return CustomResponse.error(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @PutMapping("/blog/{id}")
-    public Blog updateBlog(@PathVariable int id, @RequestBody Blog blog){
-        return blogService.aggiornaBlog(id, blog);
+    public ResponseEntity<CustomResponse> updateBlog(@PathVariable int id, @RequestBody BlogRequest blogRequest){
+        try {
+            return CustomResponse.success(HttpStatus.OK.toString(), blogService.updateBlog(id, blogRequest), HttpStatus.OK);
+        }
+        catch (NotFoundException e){
+            return CustomResponse.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e){
+            return CustomResponse.error(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @DeleteMapping("/blog/{id}")
-    public void deleteBlog(@PathVariable int id){
-        blogService.deleteBlog(id);
+    public ResponseEntity<CustomResponse> deleteBlog(@PathVariable int id){
+        try {
+            blogService.deleteBlog(id);
+            return CustomResponse.emptyResponse("Blog con id=" + id + " cancellato", HttpStatus.OK);
+        }
+        catch (NotFoundException e){
+            return CustomResponse.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e){
+            return CustomResponse.error(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
 }

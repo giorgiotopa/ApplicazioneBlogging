@@ -1,10 +1,11 @@
 package com.example.ApplicazioneBlogging.service;
 
-
-
-
-
+import com.example.ApplicazioneBlogging.exception.NotFoundException;
 import com.example.ApplicazioneBlogging.model.Autore;
+import com.example.ApplicazioneBlogging.repository.AutoreRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,42 +14,34 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 @Service
 public class AutoreService {
-    private List<Autore> autores = new ArrayList<>();
+    @Autowired
+    private AutoreRepository personaRepository;
 
-
-    public List<Autore> getBlogs() {
-        return autores;
-    }
-    public Autore getBlogById(int id) throws NoSuchElementException {
-        Optional<Autore> a = autores.stream().filter(blog -> blog.getId()==id).findAny();
-
-        if (a.isPresent()){
-            return a.get();
-        }
-        else {
-            throw new NoSuchElementException("Autore non presente");
-        }
+    public Page<Autore> getAll(Pageable pageable){
+        return personaRepository.findAll(pageable);
     }
 
-    public void saveAutore(Autore autore){
-        autores.add(autore);
+    public Autore getAutoreById(int id) throws NotFoundException {
+        return personaRepository.findById(id).orElseThrow(()->new NotFoundException("Persona con id=" + id + " non trovata"));
     }
 
-    public Autore aggiornaBlog(int id, Autore autore) throws NoSuchElementException{
-        Autore a = getBlogById(id);
+    public Autore saveAutore(Autore autore){
+        return personaRepository.save(autore);
+    }
+
+    public Autore updateAutore(int id, Autore autore) throws NotFoundException {
+        Autore a = getAutoreById(id);
 
         a.setNome(autore.getNome());
         a.setCognome(autore.getCognome());
         a.setEmail(autore.getEmail());
-        a.setAvatar(autore.getAvatar());
         a.setDataDiNascita(autore.getDataDiNascita());
 
-        return a;
-
+        return personaRepository.save(a);
     }
 
-    public void deleteBlog(int id) throws NoSuchElementException{
-        Autore autore = getBlogById(id);
-        autores.remove(autore);
+    public void deleteAutore(int id) throws NotFoundException {
+        Autore autore = getAutoreById(id);
+        personaRepository.delete(autore);
     }
 }
