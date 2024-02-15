@@ -24,7 +24,6 @@ public class Blog {
         this.titolo = titolo;
         this.categoria = categoria;
         this.tempoDiLettura = tempoDiLettura;
-        this.cover = "https://picsum.photos/200/300";
         this.autore = autore;
     }
     public Blog (){}

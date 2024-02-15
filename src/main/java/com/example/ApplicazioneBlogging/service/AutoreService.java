@@ -7,18 +7,19 @@ import com.example.ApplicazioneBlogging.repository.AutoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 @Service
 public class AutoreService {
     @Autowired
     private AutoreRepository autoreRepository;
+//    @Autowired
+//    private JavaMailSenderImpl javaMailSender;
 
     public Page<Autore> getAll(Pageable pageable){
+
         return autoreRepository.findAll(pageable);
     }
 
@@ -28,7 +29,17 @@ public class AutoreService {
 
     public Autore saveAutore(AutoreRequest autoreRequest){
         Autore autore = new Autore(autoreRequest.getNome(),autoreRequest.getCognome(),autoreRequest.getEmail(),autoreRequest.getDataDiNascita());
+        sendMail(autore.getEmail());
         return autoreRepository.save(autore);
+    }
+
+    private void sendMail(String email){
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Registrazione Servizio Rest");
+        message.setText("Registrazione al servizio rest avvenuta con successo");
+
+//        javaMailSender.send(message);
     }
 
     public Autore updateAutore(int id, AutoreRequest autoreRequest) throws NotFoundException {

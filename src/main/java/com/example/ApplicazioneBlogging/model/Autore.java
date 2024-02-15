@@ -15,11 +15,18 @@ public class Autore {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
+
     private String nome;
+
     private String cognome;
+
+    @Column(unique = true)
     private String email;
+
     private LocalDate dataDiNascita;
+
     private String avatar;
+
     @JsonIgnore
     @OneToMany(mappedBy = "autore")
     private List<Blog> posts;

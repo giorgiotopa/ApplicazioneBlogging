@@ -19,6 +19,7 @@ public class BlogService {
     private AutoreService autoreService;
 
     public Page<Blog> getAll(Pageable pageable){
+
         return blogRepository.findAll(pageable);
     }
 
@@ -56,5 +57,11 @@ public class BlogService {
         Blog blog = getBlogById(id);
 
         blogRepository.delete(blog);
+    }
+    public Blog uploadCover(int id, String url) throws NotFoundException{
+        Blog auto = getBlogById(id);
+
+        auto.setCover(url);
+        return blogRepository.save(auto);
     }
 }
