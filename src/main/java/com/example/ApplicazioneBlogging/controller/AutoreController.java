@@ -1,5 +1,6 @@
 package com.example.ApplicazioneBlogging.controller;
 
+import com.cloudinary.Cloudinary;
 import com.example.ApplicazioneBlogging.exception.NotFoundException;
 import com.example.ApplicazioneBlogging.model.Autore;
 import com.example.ApplicazioneBlogging.model.AutoreRequest;
@@ -12,12 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 
 @RestController
 public class AutoreController {
     @Autowired
     private AutoreService autoreService;
+    @Autowired
+    private Cloudinary cloudinary;
 
     @GetMapping("/autori")
     public ResponseEntity<CustomResponse> getAll(Pageable pageable) {
@@ -80,5 +87,12 @@ public class AutoreController {
         } catch (Exception e) {
             return CustomResponse.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    @PatchMapping("/autori/{id}/upload")
+    public  Autore uploadAvatar(@PathVariable int id, @RequestParam("upload") MultipartFile file) throws IOException {
+        return autoreService.uploadAvatar(id,
+                (String)cloudinary.uploader().upload(file.getBytes(), new HashMap()).get("url"));
+
+
     }
 }

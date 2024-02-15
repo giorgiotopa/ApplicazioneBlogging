@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 public class AutoreService {
     @Autowired
     private AutoreRepository autoreRepository;
-//    @Autowired
-//    private JavaMailSenderImpl javaMailSender;
+    @Autowired
+    private JavaMailSenderImpl javaMailSender;
 
     public Page<Autore> getAll(Pageable pageable){
 
@@ -39,7 +39,7 @@ public class AutoreService {
         message.setSubject("Registrazione Servizio Rest");
         message.setText("Registrazione al servizio rest avvenuta con successo");
 
-//        javaMailSender.send(message);
+        javaMailSender.send(message);
     }
 
     public Autore updateAutore(int id, AutoreRequest autoreRequest) throws NotFoundException {
@@ -56,5 +56,11 @@ public class AutoreService {
     public void deleteAutore(int id) throws NotFoundException {
         Autore autore = getAutoreById(id);
         autoreRepository.delete(autore);
+    }
+
+    public Autore uploadAvatar(int id, String url){
+        Autore autore = getAutoreById(id);
+        autore.setAvatar(url);
+        return autoreRepository.save(autore);
     }
 }

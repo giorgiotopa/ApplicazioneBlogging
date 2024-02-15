@@ -22,5 +22,5 @@ public class BlogPostRequest {
     private int tempoDiLettura;
 
     @NotNull(message = "Autore obbligatorio")
-    private int idAutore;
+    private Integer idAutore;
 }
